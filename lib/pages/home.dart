@@ -1,3 +1,6 @@
+import 'package:apptexto/model/conteudo.dart';
+import 'package:apptexto/dao/storage_dao.dart';
+import 'package:apptexto/dao/impl/storage_dao_shared_preferences.dart';
 import 'package:flutter/material.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -10,16 +13,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController textEditingController = TextEditingController();
-  _clickLer(){
+  final storage = StorageDaoShared();
 
+  initState(){
+    storage.criarOuConectar();
+  }
+
+  _clickLer()async{
+    Conteudo? conteudo = await storage.ler();
+    if(conteudo != null){
+      textEditingController.text = conteudo.texto ?? "";
+      setState((){});
+    }
   }
 
   _clickSalvar(){
-
+    storage.salvar(textEditingController.text).then((value) => print('Salvo'));
   }
 
-  _clickExcluir(){
-
+  _clickExcluir() async{
+    await storage.remover();
+    textEditingController.text = "";
+    setState((){});
   }
 
   @override
